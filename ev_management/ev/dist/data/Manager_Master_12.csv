@@ -1,0 +1,13 @@
+manager_id,manager_key,manager_name,manager_email,manager_phone,assigned_city,total_drivers,account_status,email_verified,created_at
+MGR001,MGRKEY001754,Manager_01,manager01@fleetev.in,+917107420369,Delhi,20,Active,True,2023-01-01
+MGR002,MGRKEY002859,Manager_02,manager02@fleetev.in,+918051802512,Hyderabad,20,Active,True,2023-01-01
+MGR003,MGRKEY003328,Manager_03,manager03@fleetev.in,+917440213415,Bangalore,20,Active,True,2023-01-01
+MGR004,MGRKEY004792,Manager_04,manager04@fleetev.in,+919342331444,Nagpur,20,Active,True,2023-01-01
+MGR005,MGRKEY005189,Manager_05,manager05@fleetev.in,+918812140441,Surat,20,Active,True,2023-01-01
+MGR006,MGRKEY006132,Manager_06,manager06@fleetev.in,+917402418010,Mumbai,20,Active,True,2023-01-01
+MGR007,MGRKEY007323,Manager_07,manager07@fleetev.in,+919170484433,Chennai,20,Active,True,2023-01-01
+MGR008,MGRKEY008716,Manager_08,manager08@fleetev.in,+919410529190,Mumbai,20,Active,True,2023-01-01
+MGR009,MGRKEY009303,Manager_09,manager09@fleetev.in,+919791232393,Nagpur,20,Active,True,2023-01-01
+MGR010,MGRKEY010818,Manager_10,manager10@fleetev.in,+918801823908,Jaipur,20,Active,True,2023-01-01
+MGR011,MGRKEY011325,Manager_11,manager11@fleetev.in,+919530876844,Ahmedabad,20,Active,True,2023-01-01
+MGR012,MGRKEY012384,Manager_12,manager12@fleetev.in,+917027911967,Bhopal,20,Active,True,2023-01-01

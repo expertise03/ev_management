@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EV Fleet Analytics Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f0f4f8;
+    color: #1a202c;
+    min-height: 100vh;
+    padding: 28px;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 18px 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+
+  .logo {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .page-header h1 { font-size: 20px; font-weight: 700; color: #1a202c; }
+  .page-header p  { font-size: 12px; color: #718096; margin-top: 3px; }
+
+  .badge {
+    margin-left: auto;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11px;
+    color: #4338ca;
+    white-space: nowrap;
+  }
+
+  /* ── KPI strip ── */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .kpi-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border-top: 4px solid transparent;
+  }
+  .kpi-card:nth-child(1) { border-top-color: #6366f1; }
+  .kpi-card:nth-child(2) { border-top-color: #10b981; }
+  .kpi-card:nth-child(3) { border-top-color: #f59e0b; }
+  .kpi-card:nth-child(4) { border-top-color: #ef4444; }
+
+  .kpi-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #718096;
+    margin-bottom: 6px;
+  }
+
+  .kpi-value { font-size: 28px; font-weight: 700; color: #1a202c; }
+  .kpi-sub   { font-size: 11px; color: #a0aec0; margin-top: 4px; }
+
+  /* ── Layout ── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .chart-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-card.span2 { grid-column: span 2; }
+
+  .chart-title    { font-size: 14px; font-weight: 600; color: #1a202c; margin-bottom: 3px; }
+  .chart-subtitle { font-size: 11px; color: #a0aec0; margin-bottom: 14px; }
+  .chart-wrap     { position: relative; }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #4a5568;
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ── Donut center ── */
+  .donut-wrap { position: relative; }
+
+  .donut-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .donut-center-num   { font-size: 22px; font-weight: 700; color: #1a202c; line-height: 1; }
+  .donut-center-label { font-size: 10px; color: #a0aec0; margin-top: 3px; }
+
+  /* ── Section label ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #6366f1;
+    margin-bottom: 12px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+  }
+
+  /* ── Polar / Radar sizing ── */
+  .polar-wrap { display: flex; align-items: center; justify-content: center; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="page-header">
+  <div class="logo">⚡</div>
+  <div>
+    <h1>EV Fleet Analytics Dashboard</h1>
+    <p>5,000 trip records · 250 drivers · 13 fleet managers</p>
+  </div>
+  <div class="badge">EV_Fleet_Hierarchy_Dataset.xlsx</div>
+</div>
+
+<!-- KPI strip -->
+<div class="kpi-strip">
+  <div class="kpi-card">
+    <div class="kpi-label">Total Trips</div>
+    <div class="kpi-value">5,000</div>
+    <div class="kpi-sub">across 250 drivers</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Avg Battery Health</div>
+    <div class="kpi-value">87.4%</div>
+    <div class="kpi-sub">fleet average SoH</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Avg Driver Score</div>
+    <div class="kpi-value">74.9</div>
+    <div class="kpi-sub">out of 100</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Avg Trip Cost</div>
+    <div class="kpi-value">₹269</div>
+    <div class="kpi-sub">energy cost per trip</div>
+  </div>
+</div>
+
+<!-- Row 1: Vehicle status (Pie) + Charging status (Doughnut) -->
+<div class="section-label">Vehicle & Charging Status</div>
+<div class="grid-2">
+
+  <!-- PIE chart – Vehicle Status -->
+  <div class="chart-card">
+    <div class="chart-title">Vehicle Status Distribution</div>
+    <div class="chart-subtitle">Operational state share across the fleet</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#6366f1"></span>Active (55.9%)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#06b6d4"></span>Charging (20%)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Idle (14.3%)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#f97316"></span>Maintenance (7.3%)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>Out of Service (2.5%)</span>
+    </div>
+    <div class="chart-wrap" style="height:230px">
+      <canvas id="vehicleStatusChart"></canvas>
+    </div>
+  </div>
+
+  <!-- DOUGHNUT – Charging Status -->
+  <div class="chart-card">
+    <div class="chart-title">Charging Status Breakdown</div>
+    <div class="chart-subtitle">Distribution of current charging states</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#94a3b8"></span>Not Charging (46%)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#6366f1"></span>Charging (25%)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#06b6d4"></span>Fast Charging (14%)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>Fully Charged (15%)</span>
+    </div>
+    <div class="donut-wrap" style="height:210px">
+      <canvas id="chargingStatusChart"></canvas>
+      <div class="donut-center">
+        <div class="donut-center-num">5,000</div>
+        <div class="donut-center-label">records</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Row 2: Battery trend (Area line) full width -->
+<div class="section-label">Battery Health & Charge Trends</div>
+<div class="chart-card full" style="margin-bottom:18px">
+  <div class="chart-title">Monthly Battery Health & State of Charge</div>
+  <div class="chart-subtitle">Average battery health % and charge level across all trips per month</div>
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot" style="background:#6366f1"></span>Battery Health %</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>Battery Charge %</span>
+  </div>
+  <div class="chart-wrap" style="height:260px">
+    <canvas id="batteryTrendChart"></canvas>
+  </div>
+</div>
+
+<!-- Row 3: Driver behaviour – Radar + Stacked bar -->
+<div class="section-label">Driver Score vs Behaviour Events</div>
+<div class="grid-2" style="margin-bottom:18px">
+
+  <!-- RADAR – behaviour profile by score band -->
+  <div class="chart-card">
+    <div class="chart-title">Behaviour Profile by Score Band (Radar)</div>
+    <div class="chart-subtitle">Avg events per trip – harsh braking, sudden accel, overspeeding</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>Score 50–60</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#f97316"></span>Score 70–80</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#6366f1"></span>Score 90–100</span>
+    </div>
+    <div class="chart-wrap polar-wrap" style="height:260px">
+      <canvas id="driverRadarChart"></canvas>
+    </div>
+  </div>
+
+  <!-- STACKED BAR – events per score band -->
+  <div class="chart-card">
+    <div class="chart-title">Stacked Behaviour Events by Score Band</div>
+    <div class="chart-subtitle">Total average events per trip stacked by type</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#ef4444"></span>Harsh Braking</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#f97316"></span>Sudden Acceleration</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Overspeeding</span>
+    </div>
+    <div class="chart-wrap" style="height:260px">
+      <canvas id="driverStackedChart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- Row 4: Charging patterns – Polar Area + Line -->
+<div class="section-label">Charging Patterns</div>
+<div class="grid-2" style="margin-bottom:18px">
+
+  <!-- POLAR AREA – charging duration by type -->
+  <div class="chart-card">
+    <div class="chart-title">Charging Duration by Charger Type (Polar Area)</div>
+    <div class="chart-subtitle">Average minutes per session</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#6366f1"></span>AC Level 1 – 87.1 min</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#06b6d4"></span>AC Level 2 – 89.6 min</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>DC Fast – 90.4 min</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Super – 91.9 min</span>
+    </div>
+    <div class="chart-wrap polar-wrap" style="height:240px">
+      <canvas id="chargingDurationChart"></canvas>
+    </div>
+  </div>
+
+  <!-- HORIZONTAL BAR – charging cost -->
+  <div class="chart-card">
+    <div class="chart-title">Avg Charging Cost by Charger Type (₹)</div>
+    <div class="chart-subtitle">Average INR per charging session</div>
+    <div class="chart-wrap" style="height:240px">
+      <canvas id="chargingCostChart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- Row 5: Energy & cost – Grouped bar + Bubble-style scatter -->
+<div class="section-label">Energy Consumption & Cost Analysis</div>
+<div class="grid-2">
+
+  <!-- GROUPED BAR – energy by road type -->
+  <div class="chart-card">
+    <div class="chart-title">Avg Energy Consumed by Road Type (kWh)</div>
+    <div class="chart-subtitle">Energy usage per trip across road categories</div>
+    <div class="chart-wrap" style="height:240px">
+      <canvas id="energyRoadChart"></canvas>
+    </div>
+  </div>
+
+  <!-- SCATTER / BUBBLE – cost vs energy per road type -->
+  <div class="chart-card">
+    <div class="chart-title">Trip Cost vs Energy by Road Type (Bubble)</div>
+    <div class="chart-subtitle">Bubble size = relative trip count; axes show cost vs kWh</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#6366f1"></span>Highway</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#ec4899"></span>Mixed</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#10b981"></span>Rural</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>Urban</span>
+    </div>
+    <div class="chart-wrap" style="height:240px">
+      <canvas id="costBubbleChart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<script>
+Chart.defaults.color = '#718096';
+Chart.defaults.borderColor = '#e2e8f0';
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.font.size = 11;
+
+// ── 1. Vehicle Status – PIE ────────────────────────────────────────────────
+new Chart(document.getElementById('vehicleStatusChart'), {
+  type: 'pie',
+  data: {
+    labels: ['Active', 'Charging', 'Idle', 'Under Maintenance', 'Out of Service'],
+    datasets: [{
+      data: [2793, 999, 715, 366, 127],
+      backgroundColor: ['#6366f1','#06b6d4','#f59e0b','#f97316','#ef4444'],
+      borderColor: '#ffffff',
+      borderWidth: 3,
+      hoverOffset: 8,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()} (${((ctx.parsed/5000)*100).toFixed(1)}%)`
+        }
+      }
+    }
+  }
+});
+
+// ── 2. Charging Status – DOUGHNUT ─────────────────────────────────────────
+new Chart(document.getElementById('chargingStatusChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Not Charging', 'Charging', 'Fast Charging', 'Fully Charged'],
+    datasets: [{
+      data: [2285, 1266, 724, 725],
+      backgroundColor: ['#94a3b8','#6366f1','#06b6d4','#10b981'],
+      borderColor: '#ffffff',
+      borderWidth: 3,
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()} (${((ctx.parsed/5000)*100).toFixed(1)}%)`
+        }
+      }
+    }
+  }
+});
+
+// ── 3. Battery Trend – AREA LINE ─────────────────────────────────────────
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+new Chart(document.getElementById('batteryTrendChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [
+      {
+        label: 'Battery Health %',
+        data: [87.54,87.73,86.89,87.40,87.50,87.17,87.56,87.79,87.18,86.71,87.04,87.88],
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.12)',
+        fill: true,
+        tension: 0.45,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#6366f1',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        yAxisID: 'y1',
+      },
+      {
+        label: 'Battery Charge %',
+        data: [54.00,56.27,54.13,56.23,57.58,54.02,53.63,55.23,53.48,55.54,55.61,55.56],
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16,185,129,0.08)',
+        fill: true,
+        tension: 0.45,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#10b981',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        borderDash: [6,3],
+        yAxisID: 'y2',
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` } }
+    },
+    scales: {
+      x: { grid: { color: '#f1f5f9' }, ticks: { autoSkip: false } },
+      y1: {
+        position: 'left',
+        grid: { color: '#f1f5f9' },
+        min: 82, max: 92,
+        ticks: { callback: v => v + '%' },
+        title: { display: true, text: 'Health %', color: '#6366f1', font: { size: 10 } }
+      },
+      y2: {
+        position: 'right',
+        grid: { display: false },
+        min: 40, max: 70,
+        ticks: { callback: v => v + '%' },
+        title: { display: true, text: 'Charge %', color: '#10b981', font: { size: 10 } }
+      }
+    }
+  }
+});
+
+// ── 4. Driver Behaviour – RADAR ──────────────────────────────────────────
+new Chart(document.getElementById('driverRadarChart'), {
+  type: 'radar',
+  data: {
+    labels: ['Harsh Braking', 'Sudden Accel', 'Overspeeding'],
+    datasets: [
+      {
+        label: 'Score 50–60',
+        data: [9.85, 10.0, 7.46],
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239,68,68,0.15)',
+        pointBackgroundColor: '#ef4444',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+      },
+      {
+        label: 'Score 70–80',
+        data: [9.79, 9.94, 7.45],
+        borderColor: '#f97316',
+        backgroundColor: 'rgba(249,115,22,0.12)',
+        pointBackgroundColor: '#f97316',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+      },
+      {
+        label: 'Score 90–100',
+        data: [9.96, 10.0, 7.67],
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.12)',
+        pointBackgroundColor: '#6366f1',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      r: {
+        min: 0,
+        max: 12,
+        ticks: { stepSize: 3, backdropColor: 'transparent', font: { size: 9 } },
+        grid: { color: '#e2e8f0' },
+        angleLines: { color: '#e2e8f0' },
+        pointLabels: { color: '#4a5568', font: { size: 11, weight: '600' } }
+      }
+    }
+  }
+});
+
+// ── 5. Driver Behaviour – STACKED BAR ────────────────────────────────────
+new Chart(document.getElementById('driverStackedChart'), {
+  type: 'bar',
+  data: {
+    labels: ['50–60', '60–70', '70–80', '80–90', '90–100'],
+    datasets: [
+      {
+        label: 'Harsh Braking',
+        data: [9.85, 10.26, 9.79, 10.21, 9.96],
+        backgroundColor: '#ef4444',
+        borderRadius: 0,
+        stack: 'events',
+      },
+      {
+        label: 'Sudden Acceleration',
+        data: [10.0, 10.13, 9.94, 9.94, 10.0],
+        backgroundColor: '#f97316',
+        borderRadius: 0,
+        stack: 'events',
+      },
+      {
+        label: 'Overspeeding',
+        data: [7.46, 7.48, 7.45, 7.59, 7.67],
+        backgroundColor: '#f59e0b',
+        borderRadius: 4,
+        borderSkipped: false,
+        stack: 'events',
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(2)}` } }
+    },
+    scales: {
+      x: { grid: { display: false }, title: { display: true, text: 'Driver Score Band', color: '#718096', font: { size: 10 } } },
+      y: {
+        stacked: true,
+        grid: { color: '#f1f5f9' },
+        title: { display: true, text: 'Avg events (stacked)', color: '#718096', font: { size: 10 } }
+      }
+    }
+  }
+});
+
+// ── 6. Charging Duration – POLAR AREA ────────────────────────────────────
+new Chart(document.getElementById('chargingDurationChart'), {
+  type: 'polarArea',
+  data: {
+    labels: ['AC Level 1', 'AC Level 2', 'DC Fast Charger', 'Super Charger'],
+    datasets: [{
+      data: [87.1, 89.6, 90.4, 91.9],
+      backgroundColor: ['rgba(99,102,241,0.7)','rgba(6,182,212,0.7)','rgba(16,185,129,0.7)','rgba(245,158,11,0.7)'],
+      borderColor: ['#6366f1','#06b6d4','#10b981','#f59e0b'],
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.r.toFixed(1)} min` } }
+    },
+    scales: {
+      r: {
+        min: 84,
+        ticks: { backdropColor: 'transparent', font: { size: 9 }, stepSize: 3 },
+        grid: { color: '#e2e8f0' }
+      }
+    }
+  }
+});
+
+// ── 7. Charging Cost – HORIZONTAL BAR ────────────────────────────────────
+new Chart(document.getElementById('chargingCostChart'), {
+  type: 'bar',
+  data: {
+    labels: ['AC Level 1', 'AC Level 2', 'DC Fast Charger', 'Super Charger'],
+    datasets: [{
+      label: 'Avg Cost (₹)',
+      data: [145.22, 147.68, 150.78, 151.94],
+      backgroundColor: ['rgba(99,102,241,0.85)','rgba(6,182,212,0.85)','rgba(16,185,129,0.85)','rgba(245,158,11,0.85)'],
+      borderColor: ['#6366f1','#06b6d4','#10b981','#f59e0b'],
+      borderWidth: 1.5,
+      borderRadius: 6,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ₹${ctx.parsed.x.toFixed(2)} avg per session` } }
+    },
+    scales: {
+      x: {
+        grid: { color: '#f1f5f9' },
+        min: 136, max: 158,
+        ticks: { callback: v => '₹' + v }
+      },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// ── 8. Energy by Road – GROUPED BAR ──────────────────────────────────────
+new Chart(document.getElementById('energyRoadChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Highway', 'Mixed', 'Rural', 'Urban'],
+    datasets: [{
+      label: 'Avg Energy (kWh)',
+      data: [27.01, 27.27, 26.45, 26.74],
+      backgroundColor: ['rgba(99,102,241,0.85)','rgba(236,72,153,0.85)','rgba(16,185,129,0.85)','rgba(245,158,11,0.85)'],
+      borderColor: ['#6366f1','#ec4899','#10b981','#f59e0b'],
+      borderWidth: 1.5,
+      borderRadius: 6,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y.toFixed(2)} kWh avg` } }
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: {
+        grid: { color: '#f1f5f9' },
+        min: 24, max: 30,
+        ticks: { callback: v => v + ' kWh' }
+      }
+    }
+  }
+});
+
+// ── 9. Cost vs Energy – BUBBLE ────────────────────────────────────────────
+new Chart(document.getElementById('costBubbleChart'), {
+  type: 'bubble',
+  data: {
+    datasets: [
+      {
+        label: 'Highway',
+        data: [{ x: 27.01, y: 270.83, r: 18 }],
+        backgroundColor: 'rgba(99,102,241,0.6)',
+        borderColor: '#6366f1',
+        borderWidth: 2,
+      },
+      {
+        label: 'Mixed',
+        data: [{ x: 27.27, y: 272.47, r: 20 }],
+        backgroundColor: 'rgba(236,72,153,0.6)',
+        borderColor: '#ec4899',
+        borderWidth: 2,
+      },
+      {
+        label: 'Rural',
+        data: [{ x: 26.45, y: 264.11, r: 14 }],
+        backgroundColor: 'rgba(16,185,129,0.6)',
+        borderColor: '#10b981',
+        borderWidth: 2,
+      },
+      {
+        label: 'Urban',
+        data: [{ x: 26.74, y: 267.51, r: 16 }],
+        backgroundColor: 'rgba(245,158,11,0.6)',
+        borderColor: '#f59e0b',
+        borderWidth: 2,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.dataset.label}: ₹${ctx.parsed.y.toFixed(2)} · ${ctx.parsed.x.toFixed(2)} kWh`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: { color: '#f1f5f9' },
+        min: 25.5, max: 28,
+        title: { display: true, text: 'Energy (kWh)', color: '#718096', font: { size: 10 } },
+        ticks: { callback: v => v + ' kWh' }
+      },
+      y: {
+        grid: { color: '#f1f5f9' },
+        min: 258, max: 278,
+        title: { display: true, text: 'Trip Cost (₹)', color: '#718096', font: { size: 10 } },
+        ticks: { callback: v => '₹' + v }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

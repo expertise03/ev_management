@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FleetPulse — EV Fleet Management</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="js/theme.js"></script>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <div class="nav-logo">
+    <span class="bolt">🚗</span>
+    <span class="brand-name">Fleet<span class="brand-accent">Pulse</span></span>
+  </div>
+  <div class="nav-links">
+    <a href="#hero">Home</a>
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-cta">
+    <button class="theme-toggle-btn" onclick="toggleTheme()">🌙 Dark</button>
+    <button class="btn btn-outline" onclick="openModal('loginModal')">Login</button>
+    <button class="btn btn-primary" onclick="openModal('loginModal')">Get Started</button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div>
+    <div class="hero-badge"><span class="dot"></span> Live Fleet Monitoring Platform</div>
+    <h1 class="hero-title">
+      Smarter Management for<br>Your <span class="accent">Electric Fleet</span>
+    </h1>
+    <p class="hero-sub">
+      Real-time tracking, battery health alerts, driver behaviour analytics,
+      and predictive maintenance — all in one powerful dashboard.
+    </p>
+    <div class="hero-actions">
+      <button class="btn btn-primary" style="font-size:1rem;padding:.75rem 2rem;" onclick="openModal('loginModal')">
+        ⚡ Get Started Free
+      </button>
+      <a href="#features" class="btn btn-outline" style="font-size:1rem;padding:.75rem 2rem;">
+        Explore Features
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">240+</div>
+        <div class="stat-label">Drivers Managed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">12</div>
+        <div class="stat-label">Fleet Managers</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">5000+</div>
+        <div class="stat-label">Trips Tracked</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">99.9%</div>
+        <div class="stat-label">Uptime</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section id="features">
+  <div style="text-align:center;margin-bottom:.5rem">
+    <span class="section-tag">Platform Features</span>
+    <h2 class="section-title">Everything You Need to Run a Smarter Fleet</h2>
+    <p class="section-sub" style="margin:0 auto">
+      From real-time telemetry to cost analytics, VoltFleet gives you complete control.
+    </p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feat-icon">🔋</div>
+      <h3>Battery Health Monitor</h3>
+      <p>Track battery percentage, temperature, voltage, and charging cycles. Get alerts before battery health degrades.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">📍</div>
+      <h3>Real-Time Location</h3>
+      <p>Live GPS tracking of all vehicles. See speed, route, and remaining range on an interactive map view.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">🧠</div>
+      <h3>Driver Behaviour Analytics</h3>
+      <p>Score drivers on harsh braking, sudden acceleration, and overspeeding to improve safety and efficiency.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">⚙️</div>
+      <h3>Predictive Maintenance</h3>
+      <p>Maintenance alerts based on service history, tire health, and component wear to prevent costly breakdowns.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">💡</div>
+      <h3>Energy Cost Analysis</h3>
+      <p>Daily, monthly, and per-trip energy cost breakdowns. Optimize charging schedules to reduce expenses.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">🗺️</div>
+      <h3>Route Optimisation</h3>
+      <p>Smart route suggestions with traffic-aware ETA, charging stops, and road type classification.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">📊</div>
+      <h3>Custom Reports</h3>
+      <p>Generate fleet-wide or per-vehicle reports on energy consumption, driver scores, and maintenance costs.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feat-icon">🔒</div>
+      <h3>Role-Based Access</h3>
+      <p>Separate dashboards for fleet managers and drivers with fine-grained permissions and email verification.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section id="how">
+  <div style="text-align:center;margin-bottom:.5rem">
+    <span class="section-tag">How It Works</span>
+    <h2 class="section-title">Up and Running in Minutes</h2>
+    <p class="section-sub" style="margin:0 auto">A simple three-step process to get your fleet online.</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Register Your Account</h3>
+      <p>Admins register with their Manager ID and key. Drivers sign up with their fleet manager's credentials.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Add Your Vehicles</h3>
+      <p>Enter EV details — make, model, battery capacity, VIN, and service history — to onboard your fleet.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Monitor in Real-Time</h3>
+      <p>Your dashboard comes alive with live telemetry, alerts, analytics, and cost breakdowns instantly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+  <div class="about-grid">
+    <div class="about-visual float">
+      <div class="big-icon">⚡</div>
+      <div class="about-stats">
+        <div class="a-stat"><div class="val">75 kWh</div><div class="lbl">Avg Battery Capacity</div></div>
+        <div class="a-stat"><div class="val">98%</div><div class="lbl">Alert Accuracy</div></div>
+        <div class="a-stat"><div class="val">₹0.45/km</div><div class="lbl">Avg Cost Per KM</div></div>
+        <div class="a-stat"><div class="val">20 Cities</div><div class="lbl">Fleet Coverage</div></div>
+      </div>
+    </div>
+    <div class="about-text">
+      <span class="section-tag">About VoltFleet</span>
+      <h2 class="section-title">Built for the Future of Mobility</h2>
+      <p class="section-sub">
+        VoltFleet is a purpose-built fleet management platform for electric vehicles.
+        We help fleet managers reduce downtime, cut energy costs, and keep drivers safe.
+      </p>
+      <ul>
+        <li>Supports all major EV brands — Tata, MG, Ather, Ola Electric, and more</li>
+        <li>Real-time alerts when battery health drops below threshold</li>
+        <li>Comprehensive driver scoring and coaching insights</li>
+        <li>Seamless integration with charging station networks across India</li>
+        <li>GDPR-compliant data handling with encrypted credentials</li>
+      </ul>
+      <div style="margin-top:1.8rem">
+        <button class="btn btn-primary" onclick="openModal('loginModal')">Start Monitoring Your Fleet</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact">
+  <div class="contact-grid">
+    <div>
+      <span class="section-tag">Contact Us</span>
+      <h2 class="section-title">Get In Touch</h2>
+      <p class="section-sub">Have questions about the platform? We're here to help.</p>
+      <div class="contact-info" style="margin-top:2rem">
+        <div class="c-item">
+          <div class="c-icon">📧</div>
+          <div><h4>Email</h4><p>support@voltfleet.in</p></div>
+        </div>
+        <div class="c-item">
+          <div class="c-icon">📞</div>
+          <div><h4>Phone</h4><p>+91 98765 43210</p></div>
+        </div>
+        <div class="c-item">
+          <div class="c-icon">📍</div>
+          <div><h4>Office</h4><p>Fleet Tech Park, Bangalore, India — 560001</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form">
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input type="text" placeholder="Arjun"/></div>
+        <div class="form-group"><label>Last Name</label><input type="text" placeholder="Sharma"/></div>
+      </div>
+      <div class="form-group"><label>Email</label><input type="email" placeholder="arjun@company.in"/></div>
+      <div class="form-group"><label>Subject</label><input type="text" placeholder="Fleet integration query"/></div>
+      <div class="form-group"><label>Message</label><textarea placeholder="Tell us about your fleet size and requirements..."></textarea></div>
+      <button class="btn btn-primary btn-block">Send Message</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="foot-logo">🚗 Fleet<span>Pulse</span></div>
+  <p>© 2024 FleetPulse — Real-Time EV Fleet Monitoring & Predictive Analytics</p>
+  <p style="margin-top:.4rem">Built with ♥ for a cleaner, smarter future</p>
+</footer>
+
+
+<!-- ============================================================
+     LOGIN MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <div class="modal-logo">
+      <div class="bolt">⚡</div>
+      <h2>Welcome Back</h2>
+      <p>Login to your VoltFleet account</p>
+    </div>
+
+    <!-- role tabs -->
+    <div class="role-tabs">
+      <button class="role-tab active" data-role="admin"  onclick="switchLoginRole('admin')">🛡️ Admin</button>
+      <button class="role-tab"        data-role="driver" onclick="switchLoginRole('driver')">🚗 Driver</button>
+    </div>
+
+    <div id="loginAlert" class="alert"></div>
+
+    <!-- Admin login -->
+    <form id="adminLoginForm">
+      <div class="form-group">
+        <label>Admin ID</label>
+        <input name="adminId" type="text" placeholder="e.g. MGR001" required autocomplete="off"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input name="adminPassword" type="password" placeholder="Your password" required/>
+          <button type="button" class="toggle-pw" onclick="togglePassword(this)">👁️</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:.5rem">Login as Admin</button>
+    </form>
+
+    <!-- Driver login -->
+    <form id="driverLoginForm" style="display:none">
+      <div class="form-group">
+        <label>Driver ID</label>
+        <input name="driverId" type="text" placeholder="e.g. DR0001" required autocomplete="off"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input name="driverPassword" type="password" placeholder="Your password" required/>
+          <button type="button" class="toggle-pw" onclick="togglePassword(this)">👁️</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top:.5rem">Login as Driver</button>
+    </form>
+
+    <div class="modal-switch" style="margin-top:1.2rem">
+      Admin? <a onclick="openModal('adminRegModal')">Register here</a> &nbsp;|&nbsp;
+      Driver? <a onclick="openModal('driverRegModal')">Register here</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     ADMIN REGISTER MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="adminRegModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('adminRegModal')">✕</button>
+    <div class="modal-logo">
+      <div class="bolt">🛡️</div>
+      <h2>Admin Registration</h2>
+      <p>Create your fleet manager account</p>
+    </div>
+
+    <div id="adminRegAlert" class="alert"></div>
+
+    <form id="adminRegisterForm">
+      <div class="form-group">
+        <label>Admin ID (Manager ID)</label>
+        <input name="regAdminId" type="text" placeholder="e.g. MGR001" required/>
+      </div>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input name="regAdminName" type="text" placeholder="Your full name" required/>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input name="regAdminEmail" type="email" placeholder="manager@fleetev.in" required/>
+      </div>
+      <div class="form-group">
+        <label>Manager Key</label>
+        <div class="input-wrap">
+          <input name="regAdminKey" type="password" placeholder="Your assigned manager key" required/>
+          <button type="button" class="toggle-pw" onclick="togglePassword(this)">👁️</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>New Password</label>
+        <div class="input-wrap">
+          <input id="regAdminPwdInput" name="regAdminPwd" type="password" placeholder="Min 8 chars, use A-Z, 0-9, !@#$" required minlength="6"/>
+          <button type="button" class="toggle-pw" onclick="togglePassword(this)">👁️</button>
+        </div>
+        <div id="adminPwdMeter"></div>
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <div class="input-wrap">
+          <input name="regAdminCPwd" type="password" placeholder="Re-enter password" required/>
+          <button type="button" class="toggle-pw" onclick="togglePassword(this)">👁️</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Register Admin Account</button>
+    </form>
+
+    <div class="modal-switch">
+      Already registered? <a onclick="openModal('loginModal')">Login here</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     DRIVER REGISTER MODAL
+     ============================================================ -->
+<div class="modal-overlay" id="driverRegModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('driverRegModal')">✕</button>
+    <div class="modal-logo">
+      <div class="bolt">🚗</div>
+      <h2>Driver Registration</h2>
+      <p>Join your fleet manager's team</p>
+    </div>
+
+    <div id="driverRegAlert" class="alert"></div>
+
+    <form id="driverRegisterForm">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input name="regDriverName" type="text" placeholder="Your full name" required/>
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input name="regDriverEmail" type="email" placeholder="driver@fleetev.in" required/>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input name="regDriverPhone" type="tel" placeholder="+91 XXXXX XXXXX" required/>
+      </div>
+      <div class="form-group">
+        <label>Select Fleet Manager</label>
+        <select name="driverManager" id="driverManagerSel" required>
+          <option value="">-- Choose your manager --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Manager Key</label>
+        <div class="input-wrap">
+          <input name="driverMgrKey" type="password" placeholder="Key provided by your manager" required/>
+          <button type="button" class="toggle-pw" onclick="togglePassword(this)">👁️</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input id="regDriverPwdInput" name="regDriverPwd" type="password" placeholder="Min 8 chars, use A-Z, 0-9, !@#$" required minlength="6"/>
+          <button type="button" class="toggle-pw" onclick="togglePassword(this)">👁️</button>
+        </div>
+        <div id="driverPwdMeter"></div>
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <div class="input-wrap">
+          <input name="regDriverCPwd" type="password" placeholder="Re-enter password" required/>
+          <button type="button" class="toggle-pw" onclick="togglePassword(this)">👁️</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Register Driver Account</button>
+    </form>
+
+    <div class="modal-switch">
+      Already registered? <a onclick="openModal('loginModal')">Login here</a>
+    </div>
+  </div>
+</div>
+
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+</body>
+</html>

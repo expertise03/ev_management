@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard — FleetPulse</title>
+  <link rel="stylesheet" href="../css/dashboard.css"/>
+  <link rel="stylesheet" href="../css/theme3d.css"/>
+  <script src="../js/theme.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">FP&nbsp;<span class="logo-accent">FleetPulse</span></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a class="nav-item active" data-tab="overview" onclick="switchTab('overview',this)">
+      <span class="icon">&#9783;</span> Dashboard
+    </a>
+    <a class="nav-item" data-tab="vehicles" onclick="switchTab('vehicles',this)">
+      <span class="icon">&#9649;</span> Vehicles
+    </a>
+    <a class="nav-item" data-tab="drivers" onclick="switchTab('drivers',this)">
+      <span class="icon">&#9673;</span> Drivers
+    </a>
+    <div class="nav-section-label">Analytics</div>
+    <a class="nav-item" data-tab="revenue" onclick="switchTab('revenue',this)">
+      <span class="icon">&#9699;</span> Revenue
+    </a>
+    <a class="nav-item" data-tab="charging" onclick="switchTab('charging',this)">
+      <span class="icon">&#9889;</span> Charging
+    </a>
+    <a class="nav-item" data-tab="maintenance" onclick="switchTab('maintenance',this)">
+      <span class="icon">&#9874;</span> Maintenance
+    </a>
+    <a class="nav-item" data-tab="overspeed" onclick="switchTab('overspeed',this)">
+      <span class="icon">&#9654;</span> Overspeed
+    </a>
+    <a class="nav-item" data-tab="behaviour" onclick="switchTab('behaviour',this)">
+      <span class="icon">&#9775;</span> Driver Behaviour
+    </a>
+    <a class="nav-item" data-tab="route" onclick="switchTab('route',this)">
+      <span class="icon">&#10160;</span> Route Optimization
+    </a>
+    <a class="nav-item" data-tab="weather" onclick="switchTab('weather',this)">
+      <span class="icon">&#9729;</span> Weather & Traffic
+    </a>
+    <div class="nav-section-label">Reports</div>
+    <a class="nav-item" data-tab="reports" onclick="switchTab('reports',this)">
+      <span class="icon">&#9741;</span> Reports
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="avatar" id="adminAvatar">A</div>
+      <div><div class="name" id="adminName">Admin</div><div class="role">Fleet Manager</div></div>
+    </div>
+    <button class="btn-logout" onclick="logout()">Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="pageTitle">Dashboard Overview</div>
+    <div class="topbar-right">
+      <div class="global-filters">
+        <select id="gf-month" onchange="applyFilters()" title="Month">
+          <option value="">All Months</option>
+          <option value="January">January</option><option value="February">February</option>
+          <option value="March">March</option><option value="April">April</option>
+          <option value="May">May</option><option value="June">June</option>
+          <option value="July">July</option><option value="August">August</option>
+          <option value="September">September</option><option value="October">October</option>
+          <option value="November">November</option><option value="December">December</option>
+        </select>
+        <select id="gf-vehicle" onchange="applyFilters()" title="Vehicle ID"><option value="">All Vehicles</option></select>
+        <select id="gf-driver" onchange="applyFilters()" title="Driver ID"><option value="">All Drivers</option></select>
+        <select id="gf-type" onchange="applyFilters()" title="Vehicle Type"><option value="">All Types</option></select>
+        <select id="gf-city" onchange="applyFilters()" title="City"><option value="">All Cities</option></select>
+        <select id="gf-traffic" onchange="applyFilters()" title="Traffic Level"><option value="">All Traffic</option></select>
+        <button class="btn btn-sm btn-outline-g" onclick="resetFilters()">Reset</button>
+      </div>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle theme">🌙 Dark</button>
+      <div class="time-display" id="clock"></div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+
+        <!-- ===== OVERVIEW TAB ===== -->
+    <div class="tab-pane active" id="tab-overview">
+      <div class="kpi-grid" id="kpiCards"></div>
+      <div class="fleet-counter-grid" id="fleetCounters"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+        <div class="card"><div class="sec-head"><h3>Active Alerts</h3><span class="tag">Live</span></div><div class="alert-list" id="alertPanel"></div></div>
+        <div class="card"><div class="sec-head"><h3>Vehicle Status Trend</h3></div><div style="height:260px;position:relative"><canvas id="vehicleStatusChart"></canvas></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+        <div class="card"><div class="sec-head"><h3>Revenue by Vehicle</h3><span class="tag">Descending</span></div><div style="overflow-x:auto;max-height:280px"><table class="rank-table"><thead><tr><th>#</th><th>Vehicle</th><th>Type</th><th>Revenue</th></tr></thead><tbody id="rankRevenueTbody"></tbody></table></div></div>
+        <div class="card"><div class="sec-head"><h3>Overspeed Violations</h3><span class="tag">Descending</span></div><div style="overflow-x:auto;max-height:280px"><table class="rank-table"><thead><tr><th>#</th><th>Vehicle</th><th>Driver</th><th>Violations</th></tr></thead><tbody id="rankOverspeedTbody"></tbody></table></div></div>
+        <div class="card"><div class="sec-head"><h3>Driver Financial Rank</h3><span class="tag">By Revenue</span></div><div style="overflow-x:auto;max-height:280px"><table class="rank-table"><thead><tr><th>#</th><th>Driver</th><th>Revenue</th><th>Expenses</th><th>Net Profit</th><th>Trips</th></tr></thead><tbody id="rankDriverTbody"></tbody></table></div></div>
+      </div>
+      <div class="sec-head"><h3>Recent Trips</h3><span class="tag" id="tripCount">—</span></div>
+      <div class="table-wrap"><table id="tripsTable"><thead><tr><th>Driver</th><th>Vehicle</th><th>Route</th><th>Distance km</th><th>Duration min</th><th>Batt. Health %</th><th>Energy kWh</th><th>Cost</th><th>Weather</th><th>Month</th></tr></thead><tbody id="tripsTbody"></tbody></table></div>
+    </div>
+
+    <!-- ===== VEHICLES TAB ===== -->
+    <div class="tab-pane" id="tab-vehicles">`n      <div class="kpi-grid" id="vehiclesKPIs" style="margin-bottom:1.2rem"></div>`n      <div class="sec-head"><h3>Fleet Vehicles</h3></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Vehicle ID</th><th>Make/Model</th><th>Type</th>
+            <th>Battery Health %</th><th>Tire Health %</th><th>Status</th>
+            <th>Driver</th><th>Avg Score</th><th>Maint. Alert</th>
+          </tr></thead>
+          <tbody id="vehiclesTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== DRIVERS TAB ===== -->
+    <div class="tab-pane" id="tab-drivers">`n      <div class="kpi-grid" id="driversKPIs" style="margin-bottom:1.2rem"></div>`n      <div class="sec-head"><h3>All Drivers</h3></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Driver ID</th><th>Vehicle</th><th>Avg Score</th>
+            <th>Harsh Braking</th><th>Sudden Accel.</th><th>Overspeed</th>
+            <th>Trips</th><th>Total Distance km</th><th>Status</th>
+          </tr></thead>
+          <tbody id="driversTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== REVENUE TAB ===== -->
+    <div class="tab-pane" id="tab-revenue">
+      <div class="stats-grid" id="revenueKPIs"></div>
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="sec-head"><h3>💰 Vehicle-wise Revenue Trend (Jan → Selected Month)</h3></div>
+        <canvas id="revenueLineChart" height="90"></canvas>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Vehicle ID</th><th>Make/Model</th><th>Type</th>
+            <th>Total Revenue ₹</th><th>Avg Revenue ₹</th><th>Trips</th><th>Rank</th>
+          </tr></thead>
+          <tbody id="revenueTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== CHARGING TAB ===== -->
+    <div class="tab-pane" id="tab-charging">
+      <div class="stats-grid" id="chargingKPIs"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+        <div class="card">
+          <div class="sec-head"><h3>🔌 Charging Cost Trend (prev 3 months)</h3></div>
+          <canvas id="chargingLineChart" height="180"></canvas>
+        </div>
+        <div class="card">
+          <div class="sec-head"><h3>🚗 Vehicle-wise Charging Cost</h3></div>
+          <canvas id="chargingBarChart" height="180"></canvas>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="sec-head"><h3>⏱️ Charging Hours per Vehicle (prev 3 months)</h3></div>
+        <canvas id="chargingHoursChart" height="80"></canvas>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Vehicle</th><th>Driver</th><th>Month</th>
+            <th>Charging Cost ₹</th><th>Charging Duration min</th>
+            <th>Charging Hours</th><th>Sessions</th>
+          </tr></thead>
+          <tbody id="chargingTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== MAINTENANCE TAB ===== -->
+    <div class="tab-pane" id="tab-maintenance">
+      <div class="stats-grid" id="maintKPIs"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+        <div class="card">
+          <div class="sec-head"><h3>⚙️ Maintenance Cost by Vehicle (prev 3 months)</h3></div>
+          <canvas id="maintBarChart" height="180"></canvas>
+        </div>
+        <div class="card">
+          <div class="sec-head"><h3>🥧 Maintenance Categories</h3></div>
+          <canvas id="maintPieChart" height="180"></canvas>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Vehicle</th><th>Driver</th><th>Month</th>
+            <th>Maint. Cost ₹</th><th>Alert Type</th>
+            <th>Batt. Health %</th><th>Tire Health %</th><th>Status</th>
+          </tr></thead>
+          <tbody id="maintTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== OVERSPEED TAB ===== -->
+    <div class="tab-pane" id="tab-overspeed">
+      <div class="stats-grid" id="overspeedKPIs"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+        <div class="card">
+          <div class="sec-head"><h3>📈 Monthly Violation Trend (prev 3 months)</h3></div>
+          <canvas id="overspeedLineChart" height="180"></canvas>
+        </div>
+        <div class="card">
+          <div class="sec-head"><h3>🚦 Vehicle-wise Violations</h3></div>
+          <canvas id="overspeedBarChart" height="180"></canvas>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Vehicle</th><th>Driver</th><th>Month</th>
+            <th>Overspeed Count</th><th>Avg Speed km/h</th><th>Risk Level</th>
+          </tr></thead>
+          <tbody id="overspeedTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== DRIVER BEHAVIOUR TAB ===== -->
+    <div class="tab-pane" id="tab-behaviour">
+      <div class="stats-grid" id="behaviourKPIs"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+        <div class="card">
+          <div class="sec-head"><h3>🏆 Driver Score Distribution</h3></div>
+          <canvas id="scoreDistChart" height="180"></canvas>
+        </div>
+        <div class="card">
+          <div class="sec-head"><h3>📊 Behaviour Events by Driver (Top 20)</h3></div>
+          <canvas id="behaviourBarChart" height="180"></canvas>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Rank</th><th>Driver ID</th><th>Vehicle</th>
+            <th>Avg Score</th><th>Harsh Braking</th><th>Sudden Accel.</th>
+            <th>Overspeed</th><th>Trips</th><th>Rating</th>
+          </tr></thead>
+          <tbody id="behaviourTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== ROUTE OPTIMIZATION TAB ===== -->
+    <div class="tab-pane" id="tab-route">
+      <div class="stats-grid" id="routeKPIs"></div>
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="sec-head"><h3>🗺️ Route Distance — Planned vs Actual (Top 30 trips)</h3></div>
+        <canvas id="routeBarChart" height="80"></canvas>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Vehicle</th><th>Driver</th><th>Route</th><th>Month</th>
+            <th>Planned km</th><th>Actual km</th><th>Efficiency %</th>
+            <th>Energy kWh</th><th>kWh/km</th><th>Status</th>
+          </tr></thead>
+          <tbody id="routeTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== WEATHER & TRAFFIC TAB ===== -->
+    <div class="tab-pane" id="tab-weather">
+      <div class="stats-grid" id="weatherKPIs"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+        <div class="card">
+          <div class="sec-head"><h3>🌦️ Avg Speed by Weather Condition</h3></div>
+          <canvas id="weatherSpeedChart" height="180"></canvas>
+        </div>
+        <div class="card">
+          <div class="sec-head"><h3>🚦 Avg Energy by Traffic Level</h3></div>
+          <canvas id="trafficEnergyChart" height="180"></canvas>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.5rem">
+        <div class="card">
+          <div class="sec-head"><h3>⏱️ Avg Trip Duration by Weather</h3></div>
+          <canvas id="weatherDurationChart" height="180"></canvas>
+        </div>
+        <div class="card">
+          <div class="sec-head"><h3>⚡ Avg Energy Consumption by Weather</h3></div>
+          <canvas id="weatherEnergyChart" height="180"></canvas>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Weather</th><th>Traffic</th><th>Trips</th>
+            <th>Avg Speed km/h</th><th>Avg Energy kWh</th>
+            <th>Avg Duration min</th><th>Avg Cost ₹</th>
+          </tr></thead>
+          <tbody id="weatherTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== REPORTS TAB ===== -->
+    <div class="tab-pane" id="tab-reports">
+      <div class="form-card" style="max-width:600px">
+        <h3>📄 Generate Fleet Report</h3>
+        <div class="form-grid">
+          <div class="fg">
+            <label>Report Type</label>
+            <select id="reportType">
+              <option value="summary">Fleet Summary</option>
+              <option value="energy">Energy Consumption</option>
+              <option value="behaviour">Driver Behaviour</option>
+              <option value="maintenance">Maintenance Status</option>
+              <option value="battery">Battery Health</option>
+              <option value="revenue">Revenue Analysis</option>
+              <option value="overspeed">Overspeed Violations</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Format</label>
+            <select id="reportFormat">
+              <option value="screen">View on Screen</option>
+              <option value="csv">Download CSV</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-green" onclick="generateReport()">Generate Report</button>
+        </div>
+      </div>
+      <div id="reportOutput" style="margin-top:1.5rem"></div>
+    </div>
+
+  </div><!-- content -->
+</div><!-- main -->
+
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+
+<!-- CHATBOT ICON — teal circle bottom-right -->
+<button id="chatFab" aria-label="Open AI Chat"
+  style="position:fixed;bottom:28px;right:28px;z-index:9999;width:54px;height:54px;border-radius:50%;background:#1a7f64;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(26,127,100,.55);transition:transform .2s,background .2s">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+</button>
+
+<!-- CHAT PANEL -->
+<div id="chatPanel"
+  style="position:fixed;bottom:0;right:28px;z-index:9998;width:330px;height:460px;background:#fff;border-radius:14px 14px 0 0;box-shadow:0 -4px 28px rgba(0,0,0,.14);display:flex;flex-direction:column;overflow:hidden;transform:translateY(calc(100% + 10px));transition:transform .3s cubic-bezier(.4,0,.2,1);border:1px solid #e2e8f0">
+  <div id="chatHeader" style="background:#1a7f64;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:.55rem">
+      <div style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:.95rem">🚗</div>
+      <div style="color:#fff">
+        <div style="font-weight:700;font-size:.85rem;line-height:1">FleetPulse AI</div>
+        <div style="font-size:.65rem;opacity:.85">● Online</div>
+      </div>
+    </div>
+    <button id="chatClose" style="background:none;border:none;color:#fff;font-size:1.1rem;cursor:pointer;line-height:1;padding:.1rem">✕</button>
+  </div>
+  <div id="chatMsgs" style="flex:1;overflow-y:auto;padding:.8rem;display:flex;flex-direction:column;gap:.48rem;background:#f8fafc;scroll-behavior:smooth">
+    <div class="cm bot">
+      👋 Hello, Fleet Manager!<br>
+      Ask about your <strong>fleet</strong>, <strong>revenue</strong>, <strong>drivers</strong>, <strong>maintenance</strong>, <strong>charging</strong> or <strong>overspeed</strong>.
+    </div>
+    <div id="chatChips" style="display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.15rem">
+      <button class="cc" data-q="fleet overview">📊 Fleet overview</button>
+      <button class="cc" data-q="revenue analysis">💰 Revenue</button>
+      <button class="cc" data-q="driver scores">🧠 Driver scores</button>
+      <button class="cc" data-q="maintenance status">⚙️ Maintenance</button>
+      <button class="cc" data-q="overspeed violations">🚦 Overspeed</button>
+      <button class="cc" data-q="charging statistics">⚡ Charging</button>
+    </div>
+  </div>
+  <div id="chatTyping" style="display:none;padding:.35rem .8rem;background:#f8fafc;flex-shrink:0">
+    <div style="display:flex;gap:4px;align-items:center">
+      <span class="cd"></span><span class="cd" style="animation-delay:.15s"></span><span class="cd" style="animation-delay:.3s"></span>
+    </div>
+  </div>
+  <div style="display:flex;gap:.4rem;padding:.6rem .8rem;border-top:1px solid #e2e8f0;background:#fff;flex-shrink:0">
+    <input id="chatInput" placeholder="Ask about your fleet…"
+      style="flex:1;padding:.42rem .7rem;border:1.5px solid #e2e8f0;border-radius:20px;font-size:.79rem;outline:none;font-family:inherit;color:#1e293b;background:#f8fafc;transition:border-color .2s"
+      onfocus="this.style.borderColor='#1a7f64'" onblur="this.style.borderColor='#e2e8f0'"/>
+    <button id="chatSend" style="width:34px;height:34px;border-radius:50%;background:#1a7f64;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0">➤</button>
+  </div>
+</div>
+
+<style>
+.cm{max-width:88%;padding:.54rem .8rem;border-radius:13px;font-size:.78rem;line-height:1.52;animation:cmIn .22s ease}
+.cm.bot{background:#fff;color:#1e293b;align-self:flex-start;border-bottom-left-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.cm.user{background:#1a7f64;color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
+[data-theme="dark"] .cm.bot{background:rgba(255,255,255,.1);color:#e8f0fe}
+@keyframes cmIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.cc{font-size:.68rem;padding:.22rem .54rem;border:1.4px solid #1a7f64;border-radius:20px;background:transparent;color:#1a7f64;cursor:pointer;font-family:inherit;transition:all .15s ease}
+.cc:hover{background:#1a7f64;color:#fff}
+.cd{width:7px;height:7px;border-radius:50%;background:#94a3b8;display:inline-block;animation:cdot 1.1s ease-in-out infinite}
+@keyframes cdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+[data-theme="dark"] #chatPanel{background:#0d1530;border-color:rgba(255,255,255,.1)}
+[data-theme="dark"] #chatMsgs{background:#080d1a}
+[data-theme="dark"] #chatInput{background:rgba(255,255,255,.07);color:#e8f0fe;border-color:rgba(255,255,255,.15)}
+</style>
+
+<script src="../js/data.js"></script>
+<script src="../js/admin.js"></script>
+<script src="../js/admin-chatbot.js"></script>
+</body>
+</html>
