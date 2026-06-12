@@ -1,4 +1,4 @@
-# ⚡ EV Fleet Management System
+# EV Fleet Management System
 
 ### Smart EV Fleet Monitoring & Driver Analytics Platform
 
@@ -17,96 +17,99 @@ This platform provides **role-based dashboards** for Fleet Managers and Drivers,
 
 ---
 
-## 📌 Table of Contents
+## Table of Contents
 
-- [Project Overview](#-project-overview)
-- [Features](#-features)
-- [Technology Stack](#-technology-stack)
-- [System Architecture](#-system-architecture)
-- [Dataset Used](#-dataset-used)
-- [Key Performance Indicators (KPIs)](#-key-performance-indicators-kpis)
-- [Screens Included](#-screens-included)
-- [Machine Learning Module — EV Range Prediction](#-machine-learning-module--ev-range-prediction)
-- [Challenges Faced in ML Development](#-challenges-faced-in-ml-development)
-- [Installation](#-installation)
-- [Project Structure](#-project-structure)
-- [Business Benefits](#-business-benefits)
-- [Future Enhancements](#-future-enhancements)
-- [Learning Outcomes](#-learning-outcomes)
-- [Authors & Team](#-authors--team)
+- [Project Overview](#project-overview)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [System Architecture](#system-architecture)
+- [Dataset Used](#dataset-used)
+- [Key Performance Indicators (KPIs)](#key-performance-indicators-kpis)
+- [Screens Included](#screens-included)
+- [Machine Learning Module — EV Range Prediction](#machine-learning-module--ev-range-prediction)
+- [Challenges Faced in ML Development](#challenges-faced-in-ml-development)
+- [Installation](#installation)
+- [Project Structure](#project-structure)
+- [Business Benefits](#business-benefits)
+- [Future Enhancements](#future-enhancements)
+- [Learning Outcomes](#learning-outcomes)
+- [Screenshots of Project](#screenshots-of-project)
+- [Architecture Diagram](#architecture-diagram)
+- [Model Evaluation](#model-evaluation)
+- [Authors & Team](#authors--team)
 
 ---
 
-## 🚀 Project Overview
+## Project Overview
 
 The **EV Fleet Management System** centralizes fleet operations into a single intelligent dashboard. It analyzes telemetry data, battery statistics, charging information, maintenance records, and driver performance metrics to optimize fleet efficiency and reduce operational costs.
 
 The system supports:
 
-- 🚗 Fleet Monitoring
-- 🔋 Battery Health Management
-- 👤 Driver Performance Analysis
-- ⚡ Energy Consumption Tracking
-- 💰 Cost Analysis
-- 🛠️ Maintenance Monitoring
-- 📊 Trip Analytics
-- 🔐 Role-Based Access Control
-- 🤖 ML-Based Range Prediction & Chatbot Assistance
+- Fleet Monitoring
+- Battery Health Management
+- Driver Performance Analysis
+- Energy Consumption Tracking
+- Cost Analysis
+- Maintenance Monitoring
+- Trip Analytics
+- Role-Based Access Control
+- ML-Based Range Prediction & Chatbot Assistance
 
 ---
 
-## ✨ Features
+## Features
 
-### 📊 Fleet Dashboard
+### Fleet Dashboard
 - Real-time fleet overview
 - Active, charging, and maintenance vehicle tracking
 - Fleet utilization metrics
 - Vehicle status monitoring
 
-### 🔋 Battery Health Analytics
+### Battery Health Analytics
 - State of Charge (SoC) monitoring
 - Battery health percentage tracking
 - Low battery alerts
 - Critical battery detection
 - Battery performance visualization
 
-### 👤 Driver Management
+### Driver Management
 - Driver performance scoring
 - Trip history analysis
 - Driving behavior monitoring
 - Efficiency tracking
 
-### ⚡ Energy & Charging Management
+### Energy & Charging Management
 - Energy consumption monitoring
 - Charging status tracking
 - Charging cycle analytics
 - Daily energy cost analysis
 
-### 🛠️ Maintenance Management
+### Maintenance Management
 - Service scheduling insights
 - Maintenance alerts
 - Vehicle health monitoring
 - Preventive maintenance tracking
 
-### 💰 Cost Analysis
+### Cost Analysis
 - Fleet operational cost monitoring
 - Energy expenditure analysis
 - Cost optimization insights
 
-### 📈 Reports & Analytics
+### Reports & Analytics
 - Interactive charts and visualizations
 - KPI dashboards
 - Fleet performance reports
 - Operational trend analysis
 
-### 🤖 AI Chatbot Assistant
+### AI Chatbot Assistant
 - Conversational assistant for fleet queries
 - Driver support and FAQs
 - Quick insights retrieval through natural language
 
 ---
 
-## 🧰 Technology Stack
+## Technology Stack
 
 | Category | Technology |
 |---|---|
@@ -125,7 +128,7 @@ The system supports:
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```
 CSV Data Sources
@@ -154,7 +157,7 @@ AI Chatbot Module
 
 ---
 
-## 🗄️ Dataset Used
+## Dataset Used
 
 The project utilizes fleet telemetry datasets including:
 
@@ -184,7 +187,7 @@ The project utilizes fleet telemetry datasets including:
 
 ---
 
-## 📐 Key Performance Indicators (KPIs)
+## Key Performance Indicators (KPIs)
 
 ### Fleet KPIs
 - Total Vehicles
@@ -210,7 +213,7 @@ The project utilizes fleet telemetry datasets including:
 
 ---
 
-## 🖥️ Screens Included
+## Screens Included
 
 ### Manager Portal
 - Dashboard
@@ -229,7 +232,7 @@ The project utilizes fleet telemetry datasets including:
 
 ---
 
-## 🔬 Machine Learning Module — EV Range Prediction
+## Machine Learning Module — EV Range Prediction
 
 A core component of this project is the **EV Driving Range Prediction model**, which estimates the expected driving range of an electric vehicle based on telemetry features such as battery percentage, battery health, energy consumption, and trip statistics.
 
@@ -240,33 +243,33 @@ A core component of this project is the **EV Driving Range Prediction model**, w
 
 ---
 
-## ⚠️ Challenges Faced in ML Development
+## Challenges Faced in ML Development
 
 Building an accurate and reliable ML model for EV range prediction came with several real-world challenges:
 
-### 1. 📉 Poor Accuracy on Real-Time Dataset Values
+### 1. Poor Accuracy on Real-Time Dataset Values
 When tested with real-time/raw dataset values, the initial ML model produced **inaccurate and inconsistent (false) predictions**, despite showing good accuracy during training. This indicated that the original dataset had weak or **artificially limited correlations** between key features (such as battery percentage, energy consumption, and range), capping the model's real-world R² performance around **49%**.
 
-### 2. 🧪 Synthetic Dataset Creation
+### 2. Synthetic Dataset Creation
 To overcome the limitations of the original dataset, a **synthetic dataset** was carefully designed using a **physics-inspired range formula**, ensuring that the relationships between variables (battery %, battery health, energy consumption, trip distance, etc.) mirrored real-world EV behavior more accurately.
 
-### 3. 🎯 Fine-Tuning Feature Correlations
+### 3. Fine-Tuning Feature Correlations
 Significant effort was spent on **fine-tuning the correlation between input columns** so that the model could learn meaningful patterns rather than noise. This involved:
 - Adjusting numerical ranges and distributions of features
 - Introducing realistic noise to avoid overfitting
 - Validating correlation matrices before training
 
-### 4. ⚖️ Balancing Realism vs. Accuracy
+### 4. Balancing Realism vs. Accuracy
 A key challenge was ensuring the synthetic data was **realistic enough** to generalize to real-world scenarios, while still being **structured enough** for the model to achieve the target **80–85% R² score**.
 
-### 5. 🔁 Iterative Model Validation
+### 5. Iterative Model Validation
 Multiple training-testing cycles were performed using both **Linear Regression** and **Random Forest** models to confirm that accuracy improvements were genuine and not a result of data leakage or overfitting.
 
-> ✅ **Outcome:** After synthetic dataset creation and correlation fine-tuning, both models achieved a stable **80–85% R² score**, with significantly improved real-time prediction reliability.
+> **Outcome:** After synthetic dataset creation and correlation fine-tuning, both models achieved a stable **80–85% R² score**, with significantly improved real-time prediction reliability.
 
 ---
 
-## ⚙️ Installation
+## Installation
 
 ### Clone Repository
 ```bash
@@ -295,7 +298,7 @@ npm run build
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ev-fleet-management/
@@ -334,7 +337,7 @@ ev-fleet-management/
 
 ---
 
-## 💼 Business Benefits
+## Business Benefits
 
 ### For Fleet Managers
 - Improved fleet visibility
@@ -355,21 +358,21 @@ ev-fleet-management/
 
 ---
 
-## 🔮 Future Enhancements
+## Future Enhancements
 
-- 📍 Live GPS Tracking
-- 🤖 Predictive Maintenance using Machine Learning
-- 🗺️ Route Optimization
-- ⚠️ AI-based Driver Risk Prediction
-- 🔌 EV Charging Station Recommendations
-- 📡 Real-time IoT Integration
-- 🌱 Carbon Emission Savings Dashboard
-- 📱 Mobile Application Support
-- 💬 Enhanced Conversational Chatbot with Voice Support
+- Live GPS Tracking
+- Predictive Maintenance using Machine Learning
+- Route Optimization
+- AI-based Driver Risk Prediction
+- EV Charging Station Recommendations
+- Real-time IoT Integration
+- Carbon Emission Savings Dashboard
+- Mobile Application Support
+- Enhanced Conversational Chatbot with Voice Support
 
 ---
 
-## 🎓 Learning Outcomes
+## Learning Outcomes
 
 - React & TypeScript Development
 - State Management with Zustand
@@ -383,7 +386,7 @@ ev-fleet-management/
 
 ---
 
-## Screenshots of project
+## Screenshots of Project
 
 <img width="1386" height="710" alt="image" src="https://github.com/user-attachments/assets/18bccbbc-e930-4b7d-a5e1-17be7c2c8212" />
 
@@ -395,14 +398,21 @@ ev-fleet-management/
 
 <img width="1530" height="757" alt="image" src="https://github.com/user-attachments/assets/023a1277-09ca-4de3-95e5-f412ccd8f39b" />
 
+---
 
 ## Architecture Diagram
+
 <img width="2987" height="1625" alt="image" src="https://github.com/user-attachments/assets/09a1d622-84dc-443f-91e8-78d986fd5ff3" />
 
+---
+
 ## Model Evaluation
+
 <img width="2265" height="1238" alt="image" src="https://github.com/user-attachments/assets/37ccc03c-2c56-4755-97be-2d0072a27c4b" />
 
-## 👥 Authors & Team
+---
+
+## Authors & Team
 
 | Name | Role |
 |---|---|
@@ -418,8 +428,8 @@ A passionate group of **AI & Data Science students** dedicated to building real-
 
 <div align="center">
 
-### ⭐ If you find this project useful, consider giving it a star!
+### If you find this project useful, consider giving it a star.
 
-**Made with 💡 and ⚡ for a Sustainable EV Future**
+**Built for a Sustainable EV Future**
 
 </div>
